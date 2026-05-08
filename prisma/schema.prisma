@@ -1,0 +1,112 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  TEACHER
+  ADMIN
+}
+
+enum EstadoEntrega {
+  ENTREGADO
+  INCOMPLETO
+  REENTREGA
+}
+
+model Teacher {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(TEACHER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("teachers")
+}
+
+model Curso {
+  id                String   @id @default(cuid())
+  nombre            String
+  anio              Int
+  division          String
+  color             String   @default("#3B82F6")
+  activo            Boolean  @default(true)
+  classroomCourseId String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  alumnos Alumno[]
+  tps     TP[]
+
+  @@unique([anio, division])
+  @@map("cursos")
+}
+
+model Alumno {
+  id        String   @id @default(cuid())
+  nombre    String
+  apellido  String
+  legajo    String?  @unique
+  email     String?
+  cursoId   String
+  carColor  String   @default("#3B82F6")
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  curso    Curso     @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  entregas Entrega[]
+
+  @@index([cursoId])
+  @@map("alumnos")
+}
+
+model TP {
+  id                    String    @id @default(cuid())
+  titulo                String
+  descripcion           String?
+  numero                Int
+  cursoId               String
+  fechaEntrega          DateTime?
+  peso                  Float     @default(1.0)
+  conNota               Boolean   @default(false)
+  activo                Boolean   @default(true)
+  classroomCourseWorkId String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  curso    Curso     @relation(fields: [cursoId], references: [id], onDelete: Cascade)
+  entregas Entrega[]
+
+  @@unique([cursoId, numero])
+  @@index([cursoId])
+  @@map("tps")
+}
+
+model Entrega {
+  id           String        @id @default(cuid())
+  alumnoId     String
+  tpId         String
+  estado       EstadoEntrega @default(ENTREGADO)
+  fechaEntrega DateTime      @default(now())
+  nota         Float?
+  comentario   String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  alumno Alumno @relation(fields: [alumnoId], references: [id], onDelete: Cascade)
+  tp     TP     @relation(fields: [tpId], references: [id], onDelete: Cascade)
+
+  @@unique([alumnoId, tpId])
+  @@index([alumnoId])
+  @@index([tpId])
+  @@map("entregas")
+}
