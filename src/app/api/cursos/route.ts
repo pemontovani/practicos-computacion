@@ -16,8 +16,9 @@ export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
 
+  let body: any
   try {
-    const body = await req.json()
+    body = await req.json()
     const parsed = cursoSchema.safeParse(body)
     if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
 
