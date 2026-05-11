@@ -23,6 +23,7 @@ services:
       - "traefik.http.routers.practicos.entrypoints=websecure"
       - "traefik.http.routers.practicos.tls.certresolver=le"
       - "traefik.http.services.practicos.loadbalancer.server.port=3000"
+      - "traefik.docker.network=n8n-traefik_app_network"
     networks:
       - n8n-traefik_app_network
       - practicos_internal
