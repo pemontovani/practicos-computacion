@@ -28,7 +28,7 @@ export function DeliveryTable({ cursoId, alumnos, tps, initialEntregas, readOnly
   })
 
   const debouncedSearch = useDebounce(search, 200)
-  const { toggleEntrega, isPending } = useDeliveries(cursoId)
+  const { toggleEntrega, updateNota, isPending } = useDeliveries(cursoId)
 
   const filteredAlumnos = useMemo(() => {
     if (!debouncedSearch) return alumnos
@@ -153,9 +153,13 @@ export function DeliveryTable({ cursoId, alumnos, tps, initialEntregas, readOnly
                         entrega={alumnoEntregas[j]}
                         isPending={isPending(alumno.id, tp.id)}
                         readOnly={readOnly}
+                        conNota={tp.conNota}
                         onToggle={() =>
                           toggleEntrega(alumno.id, tp.id, alumnoEntregas[j], handleOptimisticUpdate)
                         }
+                        onNota={!readOnly && alumnoEntregas[j] ? (nota) =>
+                          updateNota(alumno.id, tp.id, alumnoEntregas[j]!, nota, handleOptimisticUpdate)
+                        : undefined}
                       />
                     </td>
                   ))}

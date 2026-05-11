@@ -197,6 +197,11 @@ export function RaceTrack({ alumnos, tps = [], entregas = [] }: RaceTrackProps) 
                           </span>
                           <span className="font-medium text-xs opacity-70 shrink-0">TP {tp.numero}</span>
                           <span className="truncate text-xs">{desc ?? tp.titulo}</span>
+                          {tp.conNota && entrega?.estado === 'ENTREGADO' && (
+                            <span className="ml-auto shrink-0 text-xs font-bold text-violet-400 bg-violet-500/10 border border-violet-500/30 rounded px-1.5 py-0.5">
+                              {entrega.nota != null ? `${entrega.nota}/10` : '—/10'}
+                            </span>
+                          )}
                         </div>
                       )
                     })}

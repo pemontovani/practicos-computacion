@@ -75,9 +75,40 @@ export function useDeliveries(cursoId: string) {
     })
   }
 
+  async function updateNota(
+    alumnoId: string,
+    tpId: string,
+    currentEntrega: Entrega,
+    nota: number | null,
+    onOptimisticUpdate: (alumnoId: string, tpId: string, newEntrega: Entrega | null) => void
+  ) {
+    const key = getCellKey(alumnoId, tpId)
+    if (pending.has(key)) return
+
+    setPending((prev) => new Set(prev).add(key))
+
+    const updated: Entrega = { ...currentEntrega, nota }
+    onOptimisticUpdate(alumnoId, tpId, updated)
+
+    try {
+      const real = await api.put<Entrega>(`/api/entregas/${currentEntrega.id}`, { nota })
+      onOptimisticUpdate(alumnoId, tpId, real)
+      mutate(`/api/cursos/${cursoId}/stats`)
+    } catch {
+      onOptimisticUpdate(alumnoId, tpId, currentEntrega)
+      toast({ title: 'Error al guardar nota', variant: 'destructive' })
+    }
+
+    setPending((prev) => {
+      const next = new Set(prev)
+      next.delete(key)
+      return next
+    })
+  }
+
   function isPending(alumnoId: string, tpId: string) {
     return pending.has(getCellKey(alumnoId, tpId))
   }
 
-  return { toggleEntrega, isPending }
+  return { toggleEntrega, updateNota, isPending }
 }
