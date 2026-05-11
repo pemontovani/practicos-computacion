@@ -24,7 +24,7 @@ services:
       - "traefik.http.routers.practicos.tls.certresolver=le"
       - "traefik.http.services.practicos.loadbalancer.server.port=3000"
     networks:
-      - app_network
+      - n8n-traefik_app_network
       - practicos_internal
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:3000']
@@ -54,8 +54,7 @@ volumes:
   postgres_data:
 
 networks:
-  app_network:
+  n8n-traefik_app_network:
     external: true
-    driver: bridge
   practicos_internal:
     driver: bridge
