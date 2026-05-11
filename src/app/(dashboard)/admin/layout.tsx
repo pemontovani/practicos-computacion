@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Header } from '@/components/layout/Header'
 
 const adminLinks = [
+  { href: '/admin/cursos', label: 'Cursos' },
   { href: '/admin/alumnos', label: 'Alumnos' },
   { href: '/admin/tps', label: 'TPs' },
   { href: '/admin/entregas', label: 'Entregas' },

@@ -3,6 +3,31 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { calculateProgress, getColorTier } from '@/lib/calculations/progress'
+import { z } from 'zod'
+
+const cursoSchema = z.object({
+  nombre: z.string().min(1).max(100),
+  anio: z.number().int().min(1).max(6),
+  division: z.string().min(1).max(5),
+  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).default('#3B82F6'),
+})
+
+export async function POST(req: Request) {
+  const session = await getServerSession(authOptions)
+  if (!session) return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
+
+  try {
+    const body = await req.json()
+    const parsed = cursoSchema.safeParse(body)
+    if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 })
+
+    const curso = await prisma.curso.create({ data: parsed.data })
+    return NextResponse.json({ data: curso }, { status: 201 })
+  } catch (e: any) {
+    if (e.code === 'P2002') return NextResponse.json({ error: `El curso ${body?.anio}°${body?.division} ya existe` }, { status: 409 })
+    return NextResponse.json({ error: 'Error al crear curso' }, { status: 500 })
+  }
+}
 
 export async function GET() {
   const session = await getServerSession(authOptions)
