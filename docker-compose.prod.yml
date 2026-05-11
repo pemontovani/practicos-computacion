@@ -1,63 +1,61 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: carrera_db_prod
-    environment:
-      POSTGRES_USER: carrera
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: carrera_escolar
-    volumes:
-      - postgres_data_prod:/var/lib/postgresql/data
-    restart: unless-stopped
-    networks:
-      - internal
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U carrera -d carrera_escolar']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   app:
     build:
       context: .
       dockerfile: Dockerfile
       target: production
-    container_name: carrera_app_prod
-    depends_on:
-      postgres:
-        condition: service_healthy
+    container_name: practicos_app
+    restart: unless-stopped
     environment:
-      DATABASE_URL: postgresql://carrera:${POSTGRES_PASSWORD}@postgres:5432/carrera_escolar
-      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
-      NEXTAUTH_URL: https://${DOMAIN}
       NODE_ENV: production
-    restart: unless-stopped
-    networks:
-      - internal
-      - web
-
-  nginx:
-    image: nginx:alpine
-    container_name: carrera_nginx
-    ports:
-      - '80:80'
-      - '443:443'
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+      DATABASE_URL: postgresql://practicos_user:${POSTGRES_PASSWORD}@db:5432/practicos_db
+      NEXTAUTH_URL: https://practicos.pmontovani.com
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      DOMAIN: practicos.pmontovani.com
     depends_on:
-      - app
-    restart: unless-stopped
+      db:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.practicos.rule=Host(`practicos.pmontovani.com`)"
+      - "traefik.http.routers.practicos.entrypoints=websecure"
+      - "traefik.http.routers.practicos.tls.certresolver=le"
+      - "traefik.http.services.practicos.loadbalancer.server.port=3000"
     networks:
-      - web
+      - app_network
+      - practicos_internal
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  db:
+    image: postgres:16-alpine
+    container_name: practicos_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: practicos_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: practicos_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - practicos_internal
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U practicos_user -d practicos_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
-  postgres_data_prod:
+  postgres_data:
 
 networks:
-  internal:
+  app_network:
+    external: true
     driver: bridge
-  web:
+  practicos_internal:
     driver: bridge
