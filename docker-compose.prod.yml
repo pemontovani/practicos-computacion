@@ -2,10 +2,7 @@ version: '3.8'
 
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
+    image: ghcr.io/pemontovani/practicos-computacion:latest
     container_name: practicos_app
     restart: unless-stopped
     environment:
