@@ -62,6 +62,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22022
           script: |
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u pemontovani --password-stdin
             docker pull ghcr.io/pemontovani/practicos-computacion:latest
