@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import {
-  LayoutDashboard, BookOpen, Settings, LogOut, Flag, Users, ClipboardList,
+  LayoutDashboard, BookOpen, Settings, LogOut, Flag, Users, ClipboardList, GraduationCap,
 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { cn } from '@/lib/utils'
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils'
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/curso/cursos', icon: BookOpen, label: 'Cursos', isGroup: true },
+  { href: '/admin/cursos', icon: GraduationCap, label: 'Cursos' },
   { href: '/admin/alumnos', icon: Users, label: 'Alumnos' },
   { href: '/admin/tps', icon: ClipboardList, label: 'TPs' },
   { href: '/admin/entregas', icon: Flag, label: 'Entregas' },

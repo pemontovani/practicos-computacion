@@ -11,7 +11,12 @@ export default async function CursosPage() {
   const cursos = await prisma.curso.findMany({
     orderBy: [{ anio: 'asc' }, { division: 'asc' }],
     include: {
-      _count: { select: { alumnos: true, tps: true } },
+      _count: {
+        select: {
+          alumnos: { where: { activo: true } },
+          tps: { where: { activo: true } },
+        },
+      },
     },
   })
 
