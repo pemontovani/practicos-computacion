@@ -8,6 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: pemontovani/practicos-computacion
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-and-push:
@@ -38,10 +39,10 @@ jobs:
             type=sha,prefix=sha-
 
       - name: Build y push imagen Docker
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
-          dockerfile: Dockerfile
+          file: Dockerfile
           target: production
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -62,15 +63,8 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            # Login a ghcr.io
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u pemontovani --password-stdin
-
-            # Pull la nueva imagen
             docker pull ghcr.io/pemontovani/practicos-computacion:latest
-
-            # Reiniciar el contenedor con la nueva imagen
             cd /opt/practicos-computacion
             docker compose -f docker-compose.prod.yml --env-file .env up -d --pull always app
-
-            # Limpiar imágenes viejas
             docker image prune -f
