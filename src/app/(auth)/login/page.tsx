@@ -109,6 +109,9 @@ export default function LoginPage() {
         <p className="text-center text-slate-500 text-xs mt-6">
           CIEU — Colegio Integral de Educación Ushuaia
         </p>
+        <p className="text-center text-slate-600 text-[10px] mt-1">
+          v{process.env.NEXT_PUBLIC_APP_VERSION}
+        </p>
       </div>
     </motion.div>
   )
