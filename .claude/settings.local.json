@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(Remove-Item -Path \"C:\\\\Users\\\\emanu\\\\OneDrive\\\\Desktop\\\\Analisis\\\\WebEscuela\\\\src\\\\app\\\\\\(dashboard\\)\\\\curso\" -Recurse -Force)",
-      "Bash(npx prisma *)"
+      "Bash(npx prisma *)",
+      "Bash(xargs grep -l \"login\\\\|Login\\\\|signin\\\\|SignIn\")"
     ]
   }
 }
