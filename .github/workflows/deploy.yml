@@ -67,5 +67,5 @@ jobs:
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u pemontovani --password-stdin
             docker pull ghcr.io/pemontovani/practicos-computacion:latest
             cd /opt/practicos-computacion
-            docker compose -f docker-compose.prod.yml --env-file .env up -d --pull always app
+            docker compose -f docker-compose.prod.yml --env-file .env up -d --pull always --force-recreate app
             docker image prune -f
