@@ -1,0 +1,18 @@
+.git
+.github
+.next
+node_modules
+npm-debug.log*
+
+# Variables de entorno locales — nunca incluir en la imagen
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Archivos de desarrollo
+*.md
+.vscode
+.editorconfig
